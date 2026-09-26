@@ -1,7 +1,7 @@
 package com.example.studentmanager
 
 
-import android.app.AlertDialog
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,6 +71,7 @@ fun StudentManager()
 {
     val viewModel: StudentViewModel = viewModel()
     val students by viewModel.student.collectAsState()
+    val filteredStudents by viewModel.filteredStudent.collectAsState()
 
     var name by remember {
         mutableStateOf("")
@@ -99,6 +100,10 @@ fun StudentManager()
         mutableStateOf("")
     }
     var EditAge by remember {
+        mutableStateOf("")
+    }
+
+    var searchTitle by remember {
         mutableStateOf("")
     }
     LaunchedEffect(Unit) {
@@ -225,7 +230,10 @@ fun StudentManager()
                     }
                 }
                 Spacer(modifier = Modifier.height(12.dp))
-                OutlinedTextField(value = "", onValueChange = {},
+                OutlinedTextField(value = searchTitle, onValueChange = {newText->
+                    searchTitle = newText
+                    viewModel.searchFilter(newText)
+                },
                     placeholder = {
                         Text(text = "Search Student")
                     },
@@ -237,11 +245,11 @@ fun StudentManager()
 
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
 
-                if (students.isNotEmpty()) {
+                if (filteredStudents.isNotEmpty()) {
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(bottom = 8.dp)
                     ) {
-                        items(students){student->
+                        items(filteredStudents){student->
 
                     Card(
                         modifier = Modifier.fillMaxWidth().height(60.dp).padding(
